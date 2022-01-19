@@ -1,71 +1,40 @@
-const fs = require('fs');
-const path = require('path');
+require("dotenv").config();
 
-const imagesDirName = 'images';
+require("@nomiclabs/hardhat-etherscan");
+require("@nomiclabs/hardhat-waffle");
+require("hardhat-gas-reporter");
+require("solidity-coverage");
 
-function getAllFileNames(dir) {
-    let fileNames = [];
-    try {
-        fileNames = fs
-            .readdirSync(dir, { withFileTypes: true })
-            .filter((item) => !item.isDirectory())
-            .map((item) => item.name);
-    } catch (err) {
-        console.log(
-            'error occurred while getting all filenames form directory: ',
-            err
-        );
-    }
-    return fileNames;
-}
+// This is a sample Hardhat task. To learn how to create your own go to
+// https://hardhat.org/guides/create-task.html
+task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
+  const accounts = await hre.ethers.getSigners();
 
-// renames the images in a given folder to hexadecimal sequence eg: 1,2,3,4,5,6,7,8,9,a,b etc
-function main() {
-    const imagesDir = path.resolve(__dirname, '..', imagesDirName);
-    let fileNames = getAllFileNames(imagesDir);
-    console.log('No. of files => ', fileNames.length);
-    console.log('Filenames: ', fileNames);
-    let counter = 1;
-    // get filenames without extension
-    fileNames = fileNames.map((fileName) => path.parse(fileName).name);
+  for (const account of accounts) {
+    console.log(account.address);
+  }
+});
 
-    // In first pass we prepend filenames with hexString separated by comma
-    // we do this to avoid overriding filenames already in hexadecimal format
-    fileNames.map((fileName) => {
-        try {
-            const hexString = parseInt(counter, 10).toString(16);
-            fs.renameSync(
-                `${imagesDir}/${fileName}.jpg`,
-                `${imagesDir}/${hexString}_${fileName}.jpg`
-            );
-            counter++;
-        } catch (err) {
-            console.log(
-                'error ocurred while adding hexString to the beginning of filenames: ',
-                fileName
-            );
-            throw err;
-        }
-    });
-    counter = 1;
-    // in second pass we actually rename files to hexString
-    fileNames.map((fileName) => {
-        try {
-            const hexString = parseInt(counter, 10).toString(16);
-            fs.renameSync(
-                `${imagesDir}/${hexString}_${fileName}.jpg`,
-                `${imagesDir}/${hexString}.jpg`
-            );
-            console.log(
-                `rename successful for file: ${fileName}.jpg to ${hexString}.jpg`
-            );
-            counter++;
-        } catch (err) {
-            console.log('error ocurred while renaming file: ', fileName);
-            throw err;
-        }
-    });
-    console.log('All files renamed successfully in images directory');
-}
+// You need to export an object to set up your config
+// Go to https://hardhat.org/config/ to learn more
 
-main();
+/**
+ * @type import('hardhat/config').HardhatUserConfig
+ */
+module.exports = {
+  solidity: "0.8.4",
+  networks: {
+    rinkeby: {
+      url: process.env.CLIENT_URL || "",
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+  },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS !== undefined,
+    currency: "USD",
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
+};
