@@ -6,7 +6,7 @@
         console.log('Running bulk_mint_nfts script...');
 
         const contractName = 'ArtCollectible'; // Change this for other contract
-        const contract_address = 'YOUR_DEPLOYED_CONTRACT_ADDRESS';
+        const contract_address = '0x892eb60A7277E7dBbdb011caC20f3958FC160391';
 
         // Note that the script needs the ABI which is generated from the compilation artifact.
         // Make sure contract is compiled and artifacts are generated

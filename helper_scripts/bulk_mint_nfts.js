@@ -6,6 +6,7 @@ const data = require('../build/contracts/ArtCollectible.json');
 const { getTokenIds, getAmounts } = require('./helpers.js');
 
 const abiArray = data.abi;
+//CONTRACT_Address = 0x892eb60A7277E7dBbdb011caC20f3958FC160391
 const contract_address = process.env.CONTRACT_ADDRESS;
 const mnemonic = process.env.MNEMONIC;
 const clientURL = process.env.CLIENT_URL;
